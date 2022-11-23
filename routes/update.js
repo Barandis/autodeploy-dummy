@@ -36,10 +36,11 @@ router.post('/update-github', function(req, res, next) {
   // }
 
   var commands = [['git', ['pull']], 'git', ['status']];
-  for (var i = 0; i < commands.length; i++) {
-    var command = commands[i];
-    spawn(command[0], command[1]);
-  }
+  spawn('git', ['pull']);
+  // for (var i = 0; i < commands.length; i++) {
+  //   var command = commands[i];
+  //   spawn(command[0], command[1]);
+  // }
   // Restart the server. This is done by adding an 'exit' hook to run whatever
   // command started this process in the first place (which should be
   // `npm start`) and then killing this process. This will cause the server to
@@ -48,7 +49,7 @@ router.post('/update-github', function(req, res, next) {
   // startup.
   process.on('exit', function () {
     spawn(process.argv.shift(), process.argv, {
-      cwd: process.cwd,
+      cwd: process.cwd(),
       detached: true,
       stdio: 'inherit'
     });
