@@ -38,7 +38,7 @@ fs.readFile(configPath, (err, data) => {
     /**
      * Listen on provided port, on all network interfaces.
      */
-    const { startup, shutdown } = config?.commands;
+    const { startup, shutdown } = config.commands;
 
     server.listen(port);
     server.on('error', onError);
