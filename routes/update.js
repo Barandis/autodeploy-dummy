@@ -18,7 +18,7 @@ fs.readFile(configPath, (err, data) => {
   }
 });
 
-router.get('/update-github', function(req, res, next) {
+router.post('/update-github', function(req, res, next) {
   var ip = req.ip;
   var allowed = false;
 
