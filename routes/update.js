@@ -6,7 +6,7 @@ var spawn = require('child_process').spawn;
 var GITHUB_IPS = [
   '207.97.227.', '50.57.128.', '108.171.174.', '50.57.231.', '204.232.175.', '192.30.252.'
 ];
-var configPath = '../config/config.json';
+var configPath = './config/config.json';
 var config;
 
 fs.readFile(configPath, (err, data) => {
@@ -22,7 +22,8 @@ router.get('/update-github', function(req, res, next) {
   var ip = req.ip;
   var allowed = false;
 
-  foreach (var githubIp of GITHUB_IPS) {
+  for (var i = 0; i < GITHUB_IPS.length; i++) {
+    var githubIp = GITHUB_IPS[i];
     var segment = ip.substring(0, githubIp.length);
     if (segment === githubIp) {
       allowed = true;
@@ -35,7 +36,8 @@ router.get('/update-github', function(req, res, next) {
   }
 
   var commands = [['git', ['pull']], 'git', ['status']];
-  foreach (var command of commands) {
+  for (var i = 0; i < commands.length; i++) {
+    var command = commands[i];
     spawn(command[0], command[1]);
   }
   // Restart the server. This is done by adding an 'exit' hook to run whatever
@@ -48,9 +50,9 @@ router.get('/update-github', function(req, res, next) {
     spawn(process.argv.shift(), process.argv, {
       cwd: process.cwd,
       detached: true,
-      stdio: 'inherit',
+      stdio: 'inherit'
     });
-  }
+  });
   process.exit();
 });
 

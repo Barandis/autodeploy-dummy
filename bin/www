@@ -11,6 +11,7 @@ var http = require('http');
 var spawn = require('child_process').spawn;
 
 var configPath = './config/config.json';
+var server;
 
 /**
  * Load the JSON config file
@@ -33,7 +34,7 @@ fs.readFile(configPath, (err, data) => {
      * Create HTTP server.
      */
 
-    var server = http.createServer(app);
+    server = http.createServer(app);
 
     /**
      * Listen on provided port, on all network interfaces.
