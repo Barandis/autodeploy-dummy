@@ -3,11 +3,11 @@ var router = express.Router();
 var fs = require('fs')
 var spawn = require('child_process').spawn;
 
-const GITHUB_IPS = [
+var GITHUB_IPS = [
   '207.97.227.', '50.57.128.', '108.171.174.', '50.57.231.', '204.232.175.', '192.30.252.'
 ];
-const configPath = '../config/config.json';
-let config;
+var configPath = '../config/config.json';
+var config;
 
 fs.readFile(configPath, (err, data) => {
   if (err) {
@@ -19,11 +19,11 @@ fs.readFile(configPath, (err, data) => {
 });
 
 router.get('/update-github', function(req, res, next) {
-  const ip = req.ip;
-  let allowed = false;
+  var ip = req.ip;
+  var allowed = false;
 
-  foreach (const githubIp of GITHUB_IPS) {
-    const segment = ip.substring(0, githubIp.length);
+  foreach (var githubIp of GITHUB_IPS) {
+    var segment = ip.substring(0, githubIp.length);
     if (segment === githubIp) {
       allowed = true;
       break;
@@ -34,8 +34,8 @@ router.get('/update-github', function(req, res, next) {
     return;
   }
 
-  const commands = [['git', ['pull']], 'git', ['status']];
-  foreach (const command of commands) {
+  var commands = [['git', ['pull']], 'git', ['status']];
+  foreach (var command of commands) {
     spawn(command[0], command[1]);
   }
   // Restart the server. This is done by adding an 'exit' hook to run whatever

@@ -38,7 +38,7 @@ fs.readFile(configPath, (err, data) => {
     /**
      * Listen on provided port, on all network interfaces.
      */
-    const { startup, shutdown } = config.commands;
+    var { startup, shutdown } = config.commands;
 
     server.listen(port);
     server.on('error', onError);
@@ -47,11 +47,11 @@ fs.readFile(configPath, (err, data) => {
     // Do not mess up those entries in config.json. The real thing should probably have
     // more thought put into security here.
     if (shutdown) {
-      const [ shutdownCmd, ...shutdownArgs ] = shutdown.split(/\s+/g);
+      var [ shutdownCmd, ...shutdownArgs ] = shutdown.split(/\s+/g);
       server.on('close', () => spawn(shutdownCmd, shutdownArgs));
     }
     if (startup) {
-      const [ startupCmd, ...startupArgs ] = startup.split(/\s+/g);
+      var [ startupCmd, ...startupArgs ] = startup.split(/\s+/g);
       spawn(startupCmd, startupArgs);
     }
   }
