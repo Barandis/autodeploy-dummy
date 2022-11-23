@@ -53,3 +53,5 @@ router.get('/update-github', function(req, res, next) {
   }
   process.exit();
 });
+
+module.exports = router;
