@@ -30,10 +30,10 @@ router.post('/update-github', function(req, res, next) {
       break;
     }
   }
-  if (!allowed) {
-    res.status(403).send('This user is not allowed to update.');
-    return;
-  }
+  // if (!allowed) {
+  //   res.status(403).send('This user is not allowed to update.');
+  //   return;
+  // }
 
   var commands = [['git', ['pull']], 'git', ['status']];
   for (var i = 0; i < commands.length; i++) {
