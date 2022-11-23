@@ -1,0 +1,118 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('autodeploy-prod:server');
+var fs = require('fs');
+var http = require('http');
+var spawn = require('child_process').spawn;
+
+var configPath = './config/config.json';
+
+/**
+ * Load the JSON config file
+ */
+fs.readFile(configPath, (err, data) => {
+  if (err) {
+    console.log(`ERROR reading config: ${err.message}`);
+    process.exit(1);
+  } else {
+    var config = JSON.parse(data);
+
+    /**
+     * Get port from environment and store in Express.
+     */
+
+    var port = normalizePort(config?.port ?? process.env.PORT ?? '3000');
+    app.set('port', port);
+
+    /**
+     * Create HTTP server.
+     */
+
+    var server = http.createServer(app);
+
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
+    const { startup, shutdown } = config?.commands;
+
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+    // WARNING: unsanitized process strings being sent directly from the config file.
+    // Do not mess up those entries in config.json. The real thing should probably have
+    // more thought put into security here.
+    if (shutdown) {
+      const [ shutdownCmd, ...shutdownArgs ] = shutdown.split(/\s+/g);
+      server.on('close', () => spawn(shutdownCmd, shutdownArgs));
+    }
+    if (startup) {
+      const [ startupCmd, ...startupArgs ] = startup.split(/\s+/g);
+      spawn(startupCmd, startupArgs);
+    }
+  }
+})
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
